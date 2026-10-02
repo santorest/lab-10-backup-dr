@@ -10,7 +10,7 @@ services:
   pg-primary:
     image: postgres:18.6-trixie@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
     environment: {POSTGRES_PASSWORD: "${PG_PASSWORD:?}", POSTGRES_DB: billing}
-    command: [postgres, -c, archive_mode=on, -c, "archive_command=gzip -c %p > /backup/pg/wal/%f.gz", -c, archive_timeout=1]
+    command: [postgres, -c, archive_mode=on, -c, "archive_command=gzip -c %p > /backup/pg/wal/%f.gz && chmod 644 /backup/pg/wal/%f.gz", -c, archive_timeout=1]
     volumes: [../out/backup-local:/backup]
   pg-restore:
     image: postgres:18.6-trixie@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
