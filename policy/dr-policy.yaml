@@ -4,7 +4,7 @@ systems:
   - {name: appointments, engine: mssql, database: appointments, rpo_minutes: 15, rto_minutes: 30}
   - {name: billing, engine: postgres, database: billing, rpo_minutes: 5, rto_minutes: 60}
 schedule:
-  mssql: {full_every_minutes: 1440, diff_every_minutes: 360, log_every_minutes: 15}
+  mssql: {full_every_minutes: 1440, diff_every_minutes: 360, log_every_minutes: 60}
   postgres: {base_every_minutes: 10080, archive_timeout_seconds: 60}
 retention:
   local_days: 14
