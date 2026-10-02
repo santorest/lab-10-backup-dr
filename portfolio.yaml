@@ -2,7 +2,7 @@
 slug: backup-dr
 category: database-security
 repo_url: https://github.com/santorest/lab-10-backup-dr
-status: in_progress          # design | in_progress | complete — set to complete only after the owner confirms
+status: complete             # design | in_progress | complete — owner confirmed 2026-10-02 after the final review fix pass (PR #4)
 difficulty: intermediate     # beginner | intermediate | advanced
 featured: true
 # The CI results are real; the data is synthetic.

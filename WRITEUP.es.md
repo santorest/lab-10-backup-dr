@@ -3,7 +3,7 @@ title: "Copias de seguridad y recuperación ante desastres con simulacro de rans
 id: "lab-10-backup-dr"
 category: "Seguridad de bases de datos"
 type: "Laboratorio"
-status: "en curso"
+status: "completado"
 date: "2026-10-02"
 time_to_reproduce: "Unos 10 minutos: una ejecución de CI (fork, activar Actions, ejecutar CI); el job del simulacro tarda 8–9 minutos"
 skills: [SQL Server, PostgreSQL, MinIO, S3 Object Lock, Python, boto3, Docker, GitHub Actions]
@@ -104,7 +104,11 @@ request y los cuatro jobs.
 De la [ejecución 37044822230](https://github.com/santorest/lab-10-backup-dr/actions/runs/37044822230) en `main`
 (2026-10-02, código final); `docs/example-report.html` es su reporte. La primera ejecución en verde,
 [37043674073](https://github.com/santorest/lab-10-backup-dr/actions/runs/37043674073), dio el mismo resultado
-(appointments RPO 11,1 min, RTO 2,1 s; billing RPO 1,8 min, RTO 59,7 s; 0 versiones perdidas).
+(appointments RPO 11,1 min, RTO 2,1 s; billing RPO 1,8 min, RTO 59,7 s; 0 versiones perdidas). Tras las
+correcciones de la revisión final, la [ejecución 37049627002](https://github.com/santorest/lab-10-backup-dr/actions/runs/37049627002)
+pasó las nuevas comprobaciones — ninguna petición destructiva aceptada, la reproducción de PostgreSQL llegó al último
+segmento de WAL obtenido — con el mismo panorama (appointments RPO 11,0 min, RTO 2,5 s; billing RPO 2,4 min,
+RTO 39,8 s; 0 versiones perdidas).
 
 | Sistema | Objetivo RPO | RPO logrado | Objetivo RTO | RTO logrado | Verificado |
 |---|---|---|---|---|---|
