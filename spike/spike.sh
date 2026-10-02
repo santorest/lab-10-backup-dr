@@ -38,7 +38,9 @@ c run --rm -T mc ls --versions writer/backups/mssql/
 # PostgreSQL: base backup + archived WAL, restore by replaying all WAL, no target
 c exec -T pg-primary psql -U postgres -d billing -c "CREATE TABLE ticks(seq bigserial PRIMARY KEY, written_at timestamptz NOT NULL DEFAULT clock_timestamp()); INSERT INTO ticks DEFAULT VALUES;"
 c exec -T pg-primary sh -c 'pg_basebackup -U postgres -D /tmp/base -Ft -z -X none --checkpoint=fast -v 2>&1' | tee ../out/basebackup.log
-grep "write-ahead log start point" ../out/basebackup.log
+lsn=$(c exec -T pg-primary sh -c 'grep -o "\"Start-LSN\": *\"[0-9A-F/]*\"" /tmp/base/backup_manifest' | sed 's/.*"\([0-9A-F]*\/[0-9A-F]*\)"/\1/')
+echo "start lsn: $lsn"
+c exec -T pg-primary psql -U postgres -tAc "SELECT pg_walfile_name('$lsn')"
 c exec -T pg-primary sh -c 'tar -cf /backup/pg/base/base.tar -C /tmp/base . && chmod 644 /backup/pg/base/base.tar'
 for i in 1 2 3 4 5; do c exec -T pg-primary psql -U postgres -d billing -c "INSERT INTO ticks DEFAULT VALUES"; sleep 1; done
 sleep 3; ls -ln ../out/backup-local/pg/wal | head
