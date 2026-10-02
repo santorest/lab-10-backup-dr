@@ -77,6 +77,15 @@ def _postgres(mine: list[Entry], system: str, before: datetime) -> list[Entry]:
     return [base, *run, *others]
 
 
+def replay_complete(last_replayed_walfile: str, chain_keys: Sequence[str]) -> bool:
+    """PostgreSQL replays WAL until a segment is missing or unreadable and then promotes, so a restore that stopped
+    early looks like a good one. True only if replay reached the last segment that was fetched (any timeline: after
+    promotion pg_walfile_name() names the new one)."""
+    replayed = wal_segment(last_replayed_walfile.strip() + ".gz")
+    fetched = [seg[1] for key in chain_keys if (seg := wal_segment(key)) is not None]
+    return replayed is not None and bool(fetched) and replayed[1] >= max(fetched)
+
+
 def select_chain(entries: Sequence[Entry], system: System, before: datetime) -> list[Entry]:
     mine = sorted((x for x in entries if x.system == system.name and x.finished_at < before), key=lambda x: x.seq)
     return _mssql(mine, system.name, before) if system.engine == "mssql" else _postgres(mine, system.name, before)

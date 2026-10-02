@@ -4,7 +4,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from drkit.chain import ChainError, mssql_restore_sql, select_chain, wal_segment
+from drkit.chain import ChainError, mssql_restore_sql, replay_complete, select_chain, wal_segment
 from drkit.manifest import Entry
 from drkit.models import System
 
@@ -127,3 +127,12 @@ def test_restore_sql_quotes_names():
     chain = [e(1, "full", "mssql/full/o'brien.bak", 10, log_no=0)]
     sql = mssql_restore_sql(chain, "a]b")
     assert "N'/restore/o''brien.bak'" in sql and "[a]]b]" in sql
+
+
+def test_replay_complete_compares_segments_not_timelines():
+    keys = ["pg/base/b.tar", "pg/wal/000000010000000000000002.gz", "pg/wal/000000010000000000000003.gz",
+            "pg/wal/000000010000000000000002.00000028.backup.gz"]  # fmt: skip
+    # after promotion pg_walfile_name() names the new timeline; the segment number is what counts
+    assert replay_complete("000000020000000000000003", keys)
+    assert not replay_complete("000000020000000000000002", keys)
+    assert not replay_complete("", keys)

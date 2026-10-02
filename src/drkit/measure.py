@@ -15,6 +15,7 @@ class Verification:
     min_seq: int | None
     max_seq: int | None
     check_ok: bool
+    replay_complete: bool = True  # PostgreSQL: replay reached the last fetched WAL segment
 
     @property
     def contiguous(self) -> bool:
@@ -62,6 +63,8 @@ def measure(
     else:
         if not verification.check_ok:
             problems.append("consistency check failed")
+        if not verification.replay_complete:
+            problems.append("replay stopped before the end of the shipped WAL")
         if verification.newest_row_at is None or verification.rows == 0:
             problems.append("no rows restored")
         elif verification.newest_row_at >= t0:

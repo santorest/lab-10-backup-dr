@@ -22,6 +22,8 @@ done
 check=ok
 compose exec -T pg-restore pg_amcheck --install-missing -d billing >/dev/null || check=fail
 IFS='|' read -r newest rows lo hi < <(compose exec -T pg-restore psql -d billing -tA -F '|' -f /lab/verify.sql)
+# Replay stops at the first segment it cannot fetch and still promotes: record how far it got (checked by drkit report).
+replayed=$(compose exec -T pg-restore psql -tAc "SELECT pg_walfile_name(pg_last_wal_replay_lsn())" | tr -d '\r')
 mark "$system.newest_row_at=$newest" "$system.rows=$rows" "$system.min_seq=$lo" "$system.max_seq=$hi" \
-  "$system.check=$check" "$system.recovered_at=now"
-echo "$system: recovered ($rows rows, newest $newest, check $check)"
+  "$system.check=$check" "$system.last_replayed_wal=$replayed" "$system.recovered_at=now"
+echo "$system: recovered ($rows rows, newest $newest, check $check, replayed to $replayed)"
