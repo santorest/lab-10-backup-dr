@@ -56,3 +56,9 @@ def test_reports_escape_untrusted_text():
     md = render_markdown(outcomes(), ATTEMPTS, [], BACKUPS, META)
     assert "<f>" not in html and "&lt;f&gt;" in html
     assert "WORM \\| locked" in md and "| appointments |" in md
+
+
+def test_short_rto_is_shown_in_seconds_too():
+    fast = [measure(APPT, 60, T0, T0, T0 + timedelta(seconds=2.1), verified(10))]
+    md = render_markdown(fast, [], [], BACKUPS, META)
+    assert "0.0 min (2.1 s)" in md

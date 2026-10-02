@@ -70,7 +70,7 @@ def _rows(outcomes: Sequence[Outcome]) -> list[list[str]]:
                 f"{_num(o.rpo_policy_minutes)} min ({_num(o.rpo_real_seconds)} s real)",
                 "yes" if o.rpo_ok else "NO",
                 f"≤ {o.rto_target_minutes:g} min",
-                f"{_num(rto_minutes)} min",
+                f"{_num(rto_minutes)} min ({_num(o.rto_seconds)} s)",
                 "yes" if o.rto_ok else "NO",
                 "yes" if o.verified else "NO: " + "; ".join(o.problems),
             ]
