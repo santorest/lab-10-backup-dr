@@ -7,6 +7,7 @@ import json
 from collections.abc import Sequence
 
 from drkit.attack import Attempt
+from drkit.gate import DESTRUCTIVE
 from drkit.measure import Outcome
 from drkit.offsite import Version
 
@@ -97,8 +98,12 @@ def render_markdown(
     refused = sum(a.refused for a in attempts)
     out += ["", f"Off-site attack: {len(attempts)} attempts, {refused} refused, {len(lost)} backup versions lost.", ""]
     accepted = sorted({a.action for a in attempts if not a.refused})
-    if accepted:
-        out += ["Accepted (not destructive unless listed as lost): " + ", ".join(_md(a) for a in accepted), ""]
+    harmless = [a for a in accepted if a not in DESTRUCTIVE]
+    destructive = [a for a in accepted if a in DESTRUCTIVE]
+    if harmless:
+        out += ["Accepted, adding new versions or delete markers on top: " + ", ".join(_md(a) for a in harmless), ""]
+    if destructive:
+        out += ["**Accepted destructive requests (the gate fails):** " + ", ".join(_md(a) for a in destructive), ""]
     sample = [a for a in attempts if a.refused][:3]
     if sample:
         out += ["| Action | Key | Refusal |", "|---|---|---|"]

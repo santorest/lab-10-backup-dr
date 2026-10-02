@@ -113,7 +113,7 @@ def test_gate_fails_with_exit_1(tmp_path: Path, capsys: pytest.CaptureFixture[st
              "rpo_policy_minutes": 40.0, "rpo_target_minutes": 15, "rto_seconds": 60,
              "rto_target_minutes": 30, "problems": []}
         ],
-        "attack": {"lost": []},
+        "attack": {"accepted": [], "lost": []},
     }  # fmt: skip
     path = tmp_path / "r.json"
     path.write_text(json.dumps(results))
