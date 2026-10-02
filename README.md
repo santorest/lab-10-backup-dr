@@ -5,7 +5,7 @@ a scripted ransomware destroys both databases and the local backups and tries to
 stolen backup key; the databases are restored from the immutable copy alone to clean hosts, verified, and the
 achieved RPO and RTO are measured against written targets. A DR runbook and a ransomware tabletop complete it.
 
-**Status: in progress.** Every result comes from GitHub Actions runs against containers with synthetic data.
+**Status: completed.** Every result comes from GitHub Actions runs against containers with synthetic data.
 
 ## How the drill works
 

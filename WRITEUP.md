@@ -3,7 +3,7 @@ title: "Backup & Disaster Recovery with a Ransomware Drill"
 id: "lab-10-backup-dr"
 category: "Database Security"
 type: "Lab"
-status: "in progress"
+status: "completed"
 date: "2026-10-02"
 time_to_reproduce: "About 10 minutes: one CI run (fork, enable Actions, run CI); the drill job takes 8–9 minutes"
 skills: [SQL Server, PostgreSQL, MinIO, S3 Object Lock, Python, boto3, Docker, GitHub Actions]
@@ -97,7 +97,10 @@ request and all four jobs.
 From [run 37044822230](https://github.com/santorest/lab-10-backup-dr/actions/runs/37044822230) on `main`
 (2026-10-02, final code); `docs/example-report.html` is its report. The first green run,
 [37043674073](https://github.com/santorest/lab-10-backup-dr/actions/runs/37043674073), gave the same outcome
-(appointments RPO 11.1 min, RTO 2.1 s; billing RPO 1.8 min, RTO 59.7 s; 0 versions lost).
+(appointments RPO 11.1 min, RTO 2.1 s; billing RPO 1.8 min, RTO 59.7 s; 0 versions lost). After the final-review
+fixes, [run 37049627002](https://github.com/santorest/lab-10-backup-dr/actions/runs/37049627002) passed the new
+checks — no destructive request accepted, PostgreSQL replay reached the last fetched WAL segment — with the same
+picture (appointments RPO 11.0 min, RTO 2.5 s; billing RPO 2.4 min, RTO 39.8 s; 0 versions lost).
 
 | System | RPO target | RPO achieved | RTO target | RTO achieved | Verified |
 |---|---|---|---|---|---|
