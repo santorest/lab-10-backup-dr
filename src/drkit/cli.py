@@ -136,7 +136,9 @@ def _ship(args: argparse.Namespace) -> None:
 
 def _report(args: argparse.Namespace) -> None:
     policy = load_policy(args.policy)
-    facts = _facts(args.facts)
+    facts: dict[str, str] = {}
+    for path in args.facts:  # one file per writer: the parallel restores never share one
+        facts |= _facts(path)
     t0, declared = parse_utc(facts["t0"]), parse_utc(facts["declared_at"])
     outcomes = []
     for s in policy.systems:
@@ -239,7 +241,8 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--get")
     s.add_argument("pairs", nargs="*")
     s = sub.add_parser("report")
-    for name in ("--policy", "--facts", "--attack", "--survival", "--restore-dir", "--out-dir"):
+    s.add_argument("--facts", type=Path, nargs="+", required=True, help="merged in order (one file per writer)")
+    for name in ("--policy", "--attack", "--survival", "--restore-dir", "--out-dir"):
         s.add_argument(name, type=Path, required=True)
     s = sub.add_parser("gate")
     s.add_argument("--results", type=Path, required=True)
