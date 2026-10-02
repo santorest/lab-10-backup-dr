@@ -5,7 +5,7 @@ category: "Database Security"
 type: "Lab"
 status: "in progress"
 date: "2026-10-02"
-time_to_reproduce: "One CI run (fork, enable Actions, run CI); the measured duration is in the Results"
+time_to_reproduce: "About 10 minutes: one CI run (fork, enable Actions, run CI); the drill job takes 8–9 minutes"
 skills: [SQL Server, PostgreSQL, MinIO, S3 Object Lock, Python, boto3, Docker, GitHub Actions]
 frameworks: [CIS Controls v8 (11.1, 11.2, 11.3, 11.4, 11.5, 17.4), MITRE ATT&CK (T1486, T1490, T1485)]
 repo: "https://github.com/santorest/lab-10-backup-dr"
@@ -94,7 +94,39 @@ request and all four jobs.
 
 ## 7. Results
 
-Results are added from the first CI runs.
+From [run 37044822230](https://github.com/santorest/lab-10-backup-dr/actions/runs/37044822230) on `main`
+(2026-10-02, final code); `docs/example-report.html` is its report. The first green run,
+[37043674073](https://github.com/santorest/lab-10-backup-dr/actions/runs/37043674073), gave the same outcome
+(appointments RPO 11.1 min, RTO 2.1 s; billing RPO 1.8 min, RTO 59.7 s; 0 versions lost).
+
+| System | RPO target | RPO achieved | RTO target | RTO achieved | Verified |
+|---|---|---|---|---|---|
+| `appointments` (SQL Server) | ≤ 15 min | **10.5 min** (10.5 s real) | ≤ 30 min | **2.5 s** | `DBCC CHECKDB` clean, 352 rows contiguous |
+| `billing` (PostgreSQL) | ≤ 5 min | **2.5 min** (2.5 s real) | ≤ 60 min | **39.7 s** | `pg_amcheck` clean, 387 rows contiguous |
+
+- **Backups shipped before T0**: `appointments` 1 full (528 KiB), 1 differential (196 KiB), 26 log backups
+  (828 KiB); `billing` 1 base backup (4.2 MiB) and 389 WAL segments (8.9 MiB compressed). Restore chains used:
+  full + differential + the 3 log backups after it; base + 387 contiguous WAL segments.
+- **The attack**: with the stolen backup key the ransomware made 3,184 attempts on the 796 original object versions.
+  All 796 retention shortenings and all 796 version deletes were refused
+  (`InvalidRequest: Object is WORM protected and cannot be overwritten`); the 796 overwrites and 796 plain deletes
+  were accepted but only added new versions and delete markers on top. **0 original versions lost.**
+- **Why the RPO is what it is**: SQL Server lost the rows written after the last log backup (policy minute 390, the
+  attack at 400): ~10 policy minutes. PostgreSQL ships WAL every policy minute, so it lost ~2.5.
+- **Why the RTOs are so short**: the databases are small (hundreds of rows plus 500 synthetic records each) and
+  the bucket is on the same network. The minutes do not transfer to production; the method does — RTO measured from
+  "recovery declared" to "restore verified".
+- **Time in CI**: the `drill` job takes 8–9 minutes (containers, a 400-policy-minute schedule in ~7 minutes, attack,
+  parallel restores).
+- **Images**: SQL Server `2025-CU9-ubuntu-24.04@sha256:2b5b5816…`, PostgreSQL `18.6-trixie@sha256:5a5a84b1…`,
+  MinIO `chainguard/minio@sha256:0f95aa41…`, mc `chainguard/minio-client@sha256:231c5976…`.
+
+**Demo pull requests** (closed unmerged; the ruleset blocks the merge):
+
+| PR | Change | What happened |
+|---|---|---|
+| [#1](https://github.com/santorest/lab-10-backup-dr/pull/1) | off-site bucket without Object Lock | the stolen key deleted all 799 original versions; no manifest survived, so neither database could be restored; the gate failed (`drill`), and `unit` failed on the tests that pin the compliance lock |
+| [#2](https://github.com/santorest/lab-10-backup-dr/pull/2) | SQL Server log backups every 60 minutes instead of 15 | 6 log backups instead of 26, the last one 40 policy minutes before the attack; both restores were verified and nothing was lost off-site, but the achieved RPO was **41.3 min** against 15 and the gate failed (`drill`); `unit` failed on the tests that pin the repository policy and timeline |
 
 ## 8. Lessons
 
@@ -107,6 +139,12 @@ Results are added from the first CI runs.
   file.
 - **The image you planned on can disappear.** MinIO's own community container images are no longer published; the
   lab uses a maintained build (Chainguard) pinned by digest.
+- **A loop can lose its input to a child process.** The first drill took one backup and then waited for the
+  attack: `docker compose exec`, run inside a `while read` loop, read the rest of the schedule from the loop's
+  standard input. Each step now gets `/dev/null` as its input.
+- **"Refused" and "malformed" are different answers.** The attack first tried to shorten the retention to *now*;
+  MinIO answers a date that is not in the future as a malformed request, not as a refusal, which stopped the
+  attack script. The attacker now asks for one minute from now — a real shortening, which the lock refuses.
 - **Object Lock behaves as documented, and that is worth proving.** With a key that may delete versions, MinIO
   refused every delete of a locked version ("WORM protected and cannot be overwritten"); a plain delete only added a
   delete marker on top of the intact original.
