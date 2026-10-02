@@ -1,0 +1,29 @@
+name: lab10spike
+services:
+  mssql-primary: &mssql
+    image: mcr.microsoft.com/mssql/server:2025-CU9-ubuntu-24.04@sha256:2b5b581621126574f3d1f75e78d3eebe8d05aedb59ad0cfdf9aa42cb0634d726
+    environment: {ACCEPT_EULA: "Y", MSSQL_PID: Developer, MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?}"}
+    volumes: [../out/backup-local:/backup]
+  mssql-restore:
+    <<: *mssql
+    volumes: [../out/restore/mssql:/restore:ro]
+  pg-primary:
+    image: postgres:18.6-trixie@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
+    environment: {POSTGRES_PASSWORD: "${PG_PASSWORD:?}", POSTGRES_DB: billing}
+    command: [postgres, -c, archive_mode=on, -c, "archive_command=gzip -c %p > /backup/pg/wal/%f.gz", -c, archive_timeout=1]
+    volumes: [../out/backup-local:/backup]
+  pg-restore:
+    image: postgres:18.6-trixie@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
+    entrypoint: [sleep, infinity]
+    user: postgres
+    volumes: [../out/restore/pg:/restore:ro]
+  minio:
+    image: chainguard/minio@sha256:0f95aa412a12351a95bb43c3b54b66440eb0aa022bb3f3458942678a489e915b
+    command: [server, /data]
+    environment: {MINIO_ROOT_USER: drill-admin, MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:?}"}
+    ports: ["127.0.0.1:9000:9000"]
+  mc:
+    image: chainguard/minio-client@sha256:231c5976b6145971a5440dcd99257b23840513999f87cbcb68cd6a8ba674ca51
+    profiles: [tools]
+    environment: {MC_HOST_admin: "http://drill-admin:${MINIO_ROOT_PASSWORD}@minio:9000", MC_HOST_writer: "http://${DRKIT_S3_KEY}:${DRKIT_S3_SECRET}@minio:9000"}
+    volumes: [./writer-policy.json:/policy/writer.json:ro, ../out/backup-local:/backup:ro]
