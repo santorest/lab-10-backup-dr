@@ -1,0 +1,16 @@
+# Backup and recovery policy of the fictional clinic. Targets are per system; the schedule says how often each
+# backup kind runs, in policy minutes. The drill compresses time (drill.time_scale) — see docs/runbook.md.
+systems:
+  - {name: appointments, engine: mssql, database: appointments, rpo_minutes: 15, rto_minutes: 30}
+  - {name: billing, engine: postgres, database: billing, rpo_minutes: 5, rto_minutes: 60}
+schedule:
+  mssql: {full_every_minutes: 1440, diff_every_minutes: 360, log_every_minutes: 15}
+  postgres: {base_every_minutes: 10080, archive_timeout_seconds: 60}
+retention:
+  local_days: 14
+  offsite_days: 14
+  offsite_lock_mode: COMPLIANCE   # COMPLIANCE: nobody can delete or shorten a locked version; none: no Object Lock
+drill:
+  time_scale: 60            # policy seconds per real second: one policy minute takes one real second
+  duration_minutes: 400     # the attack happens at policy minute 400
+  ci_lock_days: 1           # CI runners are discarded after the job
