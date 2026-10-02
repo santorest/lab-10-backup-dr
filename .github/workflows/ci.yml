@@ -1,0 +1,93 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 4 * * 1"     # weekly drill
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt && pip install --no-deps -e .
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy
+      - run: shellcheck -x scripts/*.sh lab/pg/archive-wal.sh
+
+  unit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt && pip install --no-deps -e .
+      - run: pytest --cov=drkit --cov-report=term-missing --cov-fail-under=90
+
+  drill:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt && pip install --no-deps -e .
+      - name: Secrets for this run
+        run: bash scripts/make-secrets.sh
+      - name: Backups, ransomware, restore, measure, gate
+        run: bash scripts/run-drill.sh
+      - name: Summary
+        if: always()
+        run: if [ -f out/summary.md ]; then cat out/summary.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Logs on failure
+        if: failure()
+        run: |
+          docker compose -f lab/compose.yaml ps -a
+          docker compose -f lab/compose.yaml logs --tail 80
+          tail -n 50 out/drill/ship.log || true
+          cat out/drill/facts.json || true
+          docker compose -f lab/compose.yaml exec -T pg-restore cat /tmp/restore.log || true
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: drill-results
+          path: |
+            out/results.json
+            out/summary.md
+            out/report.html
+            out/drill/
+            out/restore/*/manifest.json
+            out/restore/*/chain.json
+          if-no-files-found: ignore
+
+  secrets:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: gitleaks (full history, pinned by digest)
+        run: >-
+          docker run --rm -v "$PWD:/repo"
+          ghcr.io/gitleaks/gitleaks:v8.24.3@sha256:e1b35e12a8c6fa8901f060459cfb6b2fc4c484d3afbe3b029733a3bbfab07055
+          git /repo --redact --verbose --exit-code 1
