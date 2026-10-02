@@ -1,0 +1,31 @@
+# Metadata used by the portfolio site's `import_lab` command (site repo). Not needed to run the lab.
+slug: backup-dr
+category: database-security
+repo_url: https://github.com/santorest/lab-10-backup-dr
+status: in_progress          # design | in_progress | complete — set to complete only after the owner confirms
+difficulty: intermediate     # beginner | intermediate | advanced
+featured: true
+# The CI results are real; the data is synthetic.
+sample_output_notice: true
+cover: diagrams/architecture.png
+writeup:
+  en: WRITEUP.md
+  es: WRITEUP.es.md
+title:
+  en: "Backup & Disaster Recovery with a Ransomware Drill"
+  es: "Copias de seguridad y recuperación ante desastres con simulacro de ransomware"
+summary:
+  en: >-
+    SQL Server and PostgreSQL are backed up to a local share and an Object Lock bucket; a scripted ransomware
+    destroys the databases and the share and attacks the bucket; both are restored from the immutable copy alone and
+    RPO/RTO are measured against targets in CI.
+  es: >-
+    SQL Server y PostgreSQL se respaldan en un recurso local y en un bucket con Object Lock; un ransomware simulado
+    destruye las bases y el recurso y ataca el bucket; ambas se restauran solo desde la copia inmutable y el RPO/RTO
+    se mide frente a objetivos en CI.
+tools: [SQL Server, PostgreSQL, MinIO, S3 Object Lock, Python, boto3, Docker, GitHub Actions]
+mitre_attack: [T1486, T1490, T1485]
+bundle:
+  title:
+    en: Lab source bundle
+    es: Paquete de fuentes del laboratorio

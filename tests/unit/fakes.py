@@ -6,7 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
-from drkit.offsite import Refused, Version
+from drkit.offsite import OffsiteError, Refused, Version
 
 
 @dataclass
@@ -70,6 +70,8 @@ class FakeOffsite:
                 return
 
     def shorten_retention(self, key: str, version_id: str, until: datetime) -> None:
+        if until <= self.clock():  # as MinIO: a malformed request, not a refusal
+            raise OffsiteError("put_object_retention: MalformedXML the retain until date must be in the future")
         for obj in self.objects.get(key, []):
             if obj.version_id == version_id and obj.retain_until is not None and until < obj.retain_until:
                 raise Refused("AccessDenied: compliance retention cannot be shortened")

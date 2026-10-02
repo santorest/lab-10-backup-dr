@@ -1,0 +1,14 @@
+flowchart TB
+  W1["writer: 1 row/s"] --> MP["SQL Server primary<br/>appointments"]
+  W2["writer: 1 row/s"] --> PP["PostgreSQL primary<br/>billing"]
+  MP -- "full / diff / log" --> L["local backup share"]
+  PP -- "base + WAL archive" --> L
+  L -- "drkit ship: SHA-256 manifest" --> O["off-site bucket<br/>Object Lock (compliance)"]
+  X["ransomware at T0"] -. "drops" .-> MP
+  X -. "drops" .-> PP
+  X -. "wipes" .-> L
+  X -. "stolen key: delete / overwrite / shorten retention" .-> O
+  O -- "drkit fetch: versions before T0" --> MR["clean SQL Server"]
+  O -- "drkit fetch" --> PR["clean PostgreSQL"]
+  MR --> V["verify + RPO/RTO + gate"]
+  PR --> V

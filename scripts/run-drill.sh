@@ -33,7 +33,7 @@ wait_until() {  # policy minute -> real time since start
 }
 while read -r minute system kind; do
   wait_until "$minute"
-  bash scripts/backup-step.sh "$system" "$kind"
+  bash scripts/backup-step.sh "$system" "$kind" < /dev/null   # docker compose exec would eat the timeline
 done < <(drkit timeline --policy "$POLICY")
 wait_until "$(drkit setting --policy "$POLICY" attack_minute)"
 touch out/drill/stop-ship            # the attacker stops the backup agent first

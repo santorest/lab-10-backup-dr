@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import partial
 
 from drkit.offsite import Offsite, Refused, Version
@@ -31,9 +31,10 @@ def _try(action: str, v: Version, call: Callable[[], object]) -> Attempt:
 
 def attack(offsite: Offsite, now: datetime) -> list[Attempt]:
     originals = [v for v in offsite.versions("") if not v.is_delete_marker]
+    soon = now + timedelta(minutes=1)  # the store only accepts a future date; shorter than any real lock
     attempts: list[Attempt] = []
     for v in originals:
-        attempts.append(_try("shorten-retention", v, partial(offsite.shorten_retention, v.key, v.version_id, now)))
+        attempts.append(_try("shorten-retention", v, partial(offsite.shorten_retention, v.key, v.version_id, soon)))
         attempts.append(_try("delete-version", v, partial(offsite.delete_version, v.key, v.version_id)))
     for key in sorted({v.key for v in originals}):
         first = next(v for v in originals if v.key == key)
