@@ -47,3 +47,9 @@ def test_nothing_good_is_measured_from_a_bad_restore(recovered, verification, pr
     o = measure(APPT, 60, T0, DECLARED, recovered, verification)
     assert not o.verified and any(problem in p for p in o.problems)
     assert not (o.rpo_ok and o.rto_ok)
+
+
+def test_replay_that_stopped_early_is_not_verified():
+    v = Verification(T0 - timedelta(seconds=2), 10, 1, 10, True, replay_complete=False)
+    o = measure(APPT, 60, T0, DECLARED, DECLARED, v)
+    assert not o.verified and any("replay stopped before the end" in p for p in o.problems)

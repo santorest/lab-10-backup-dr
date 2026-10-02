@@ -92,11 +92,14 @@ def test_report_and_gate(tmp_path: Path):
             f"{system}.max_seq": "100",
             f"{system}.check": "ok",
         }
+    facts["billing.last_replayed_wal"] = "000000020000000000000003"
     (tmp_path / "facts.json").write_text(json.dumps(facts))
     (tmp_path / "attack.json").write_text("[]")
     (tmp_path / "lost.json").write_text("[]")
     restore = tmp_path / "restore"
     (restore / "mssql").mkdir(parents=True)
+    (restore / "pg").mkdir(parents=True)
+    (restore / "pg" / "chain.json").write_text(json.dumps(["pg/base/b.tar", "pg/wal/000000010000000000000003.gz"]))
     out = tmp_path / "out"
     args = ["report", "--policy", POLICY, "--facts", str(tmp_path / "facts.json"),
             "--attack", str(tmp_path / "attack.json"), "--survival", str(tmp_path / "lost.json"),
@@ -113,7 +116,7 @@ def test_gate_fails_with_exit_1(tmp_path: Path, capsys: pytest.CaptureFixture[st
              "rpo_policy_minutes": 40.0, "rpo_target_minutes": 15, "rto_seconds": 60,
              "rto_target_minutes": 30, "problems": []}
         ],
-        "attack": {"lost": []},
+        "attack": {"accepted": [], "lost": []},
     }  # fmt: skip
     path = tmp_path / "r.json"
     path.write_text(json.dumps(results))
@@ -124,3 +127,59 @@ def test_gate_fails_with_exit_1(tmp_path: Path, capsys: pytest.CaptureFixture[st
 def test_bad_policy_exits_2(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
     assert cli.main(["timeline", "--policy", str(tmp_path / "missing.yaml")]) == 2
     assert "error:" in capsys.readouterr().err
+
+
+def test_report_marks_a_short_postgres_replay_unverified(tmp_path: Path):
+    t0 = datetime(2026, 10, 2, 12, 0, tzinfo=UTC)
+    facts = {"t0": iso(t0), "declared_at": iso(t0)}
+    for system in ("appointments", "billing"):
+        facts |= {
+            f"{system}.recovered_at": iso(t0 + timedelta(minutes=1)),
+            f"{system}.newest_row_at": iso(t0 - timedelta(seconds=2)),
+            f"{system}.rows": "10",
+            f"{system}.min_seq": "1",
+            f"{system}.max_seq": "10",
+            f"{system}.check": "ok",
+        }
+    facts["billing.last_replayed_wal"] = "000000020000000000000002"
+    (tmp_path / "facts.json").write_text(json.dumps(facts))
+    restore = tmp_path / "restore"
+    (restore / "pg").mkdir(parents=True)
+    wal = ["pg/base/b.tar", "pg/wal/000000010000000000000002.gz", "pg/wal/000000010000000000000003.gz"]
+    (restore / "pg" / "chain.json").write_text(json.dumps(wal))
+    out = tmp_path / "out"
+    args = ["report", "--policy", POLICY, "--facts", str(tmp_path / "facts.json"),
+            "--attack", str(tmp_path / "none.json"), "--survival", str(tmp_path / "none.json"),
+            "--restore-dir", str(restore), "--out-dir", str(out)]  # fmt: skip
+    assert cli.main(args) == 0
+    billing = json.loads((out / "results.json").read_text())["outcomes"][1]
+    assert not billing["verified"] and "replay stopped before the end of the shipped WAL" in billing["problems"]
+
+
+def test_report_merges_one_facts_file_per_restore(tmp_path: Path):
+    # The two restores run in parallel; each writes its own facts file so neither can overwrite the other's.
+    t0 = datetime(2026, 10, 2, 12, 0, tzinfo=UTC)
+    shared = {"t0": iso(t0), "declared_at": iso(t0)}
+    (tmp_path / "facts.json").write_text(json.dumps(shared))
+    restore = tmp_path / "restore"
+    (restore / "pg").mkdir(parents=True)
+    (restore / "pg" / "chain.json").write_text(json.dumps(["pg/wal/000000010000000000000003.gz"]))
+    paths = [str(tmp_path / "facts.json")]
+    for system in ("appointments", "billing"):
+        facts = {
+            f"{system}.recovered_at": iso(t0 + timedelta(minutes=1)),
+            f"{system}.newest_row_at": iso(t0 - timedelta(seconds=2)),
+            f"{system}.rows": "10",
+            f"{system}.min_seq": "1",
+            f"{system}.max_seq": "10",
+            f"{system}.check": "ok",
+            f"{system}.last_replayed_wal": "000000020000000000000003",
+        }
+        (tmp_path / f"{system}.facts.json").write_text(json.dumps(facts))
+        paths.append(str(tmp_path / f"{system}.facts.json"))
+    out = tmp_path / "out"
+    args = ["report", "--policy", POLICY, "--facts", *paths, "--attack", str(tmp_path / "none.json"),
+            "--survival", str(tmp_path / "none.json"), "--restore-dir", str(restore),
+            "--out-dir", str(out)]  # fmt: skip
+    assert cli.main(args) == 0
+    assert [o["verified"] for o in json.loads((out / "results.json").read_text())["outcomes"]] == [True, True]

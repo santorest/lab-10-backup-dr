@@ -90,7 +90,10 @@ Los datos de contacto están en la herramienta de guardias, no en este documento
    PostgreSQL reproduce cada segmento de WAL que puede obtener y luego se promueve (`SELECT pg_is_in_recovery()`
    devuelve `f`).
 3. Verificar: `pg_amcheck --install-missing -d billing` debe salir limpio; `lab/pg/verify.sql` devuelve la hora de la
-   fila más reciente, el número de filas y el primer y último número de secuencia.
+   fila más reciente, el número de filas y el primer y último número de secuencia. La recuperación se detiene en el
+   primer segmento que no puede obtener y se promueve igual, así que también hay que comprobar hasta dónde llegó:
+   `SELECT pg_walfile_name(pg_last_wal_replay_lsn())` debe nombrar el último segmento obtenido (si no, `drkit report`
+   da la restauración por fallida).
 4. Registrar `recovered_at`.
 
 ## 6. Medir el resultado

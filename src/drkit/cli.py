@@ -11,12 +11,12 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from drkit.attack import Attempt, attack, survival
-from drkit.chain import ChainError
+from drkit.chain import ChainError, replay_complete
 from drkit.fetch import FetchError, fetch
 from drkit.gate import failures
 from drkit.manifest import ManifestError, loads
 from drkit.measure import Verification, measure
-from drkit.models import ConfigError, Policy, iso, load_policy, parse_utc
+from drkit.models import ConfigError, Policy, System, iso, load_policy, parse_utc
 from drkit.offsite import Offsite, OffsiteError, Version
 from drkit.report import render_html, render_markdown, results_json
 from drkit.schedule import timeline
@@ -74,17 +74,30 @@ def _facts(path: Path) -> dict[str, str]:
     return data
 
 
-def _verification(facts: dict[str, str], system: str) -> Verification | None:
-    if f"{system}.check" not in facts:
+def _replay_complete(facts: dict[str, str], system: System, restore_dir: Path) -> bool:
+    """SQL Server proves its chain (every RESTORE LOG must succeed); PostgreSQL must show it replayed to the end."""
+    if system.engine != "postgres":
+        return True
+    chain = restore_dir / "pg" / "chain.json"
+    last = facts.get(f"{system.name}.last_replayed_wal", "")
+    if not last or not chain.exists():
+        return False  # not proven
+    return replay_complete(last, json.loads(chain.read_text(encoding="utf-8")))
+
+
+def _verification(facts: dict[str, str], system: System, restore_dir: Path) -> Verification | None:
+    name = system.name
+    if f"{name}.check" not in facts:
         return None
-    newest = facts.get(f"{system}.newest_row_at", "")
-    lo, hi = facts.get(f"{system}.min_seq", ""), facts.get(f"{system}.max_seq", "")
+    newest = facts.get(f"{name}.newest_row_at", "")
+    lo, hi = facts.get(f"{name}.min_seq", ""), facts.get(f"{name}.max_seq", "")
     return Verification(
         parse_utc(newest) if newest else None,
-        int(facts.get(f"{system}.rows", "0") or 0),
+        int(facts.get(f"{name}.rows", "0") or 0),
         int(lo) if lo else None,
         int(hi) if hi else None,
-        facts[f"{system}.check"] == "ok",
+        facts[f"{name}.check"] == "ok",
+        _replay_complete(facts, system, restore_dir),
     )
 
 
@@ -123,14 +136,16 @@ def _ship(args: argparse.Namespace) -> None:
 
 def _report(args: argparse.Namespace) -> None:
     policy = load_policy(args.policy)
-    facts = _facts(args.facts)
+    facts: dict[str, str] = {}
+    for path in args.facts:  # one file per writer: the parallel restores never share one
+        facts |= _facts(path)
     t0, declared = parse_utc(facts["t0"]), parse_utc(facts["declared_at"])
     outcomes = []
     for s in policy.systems:
         recovered = facts.get(f"{s.name}.recovered_at")
         outcomes.append(
             measure(s, policy.time_scale, t0, declared, parse_utc(recovered) if recovered else None,
-                    _verification(facts, s.name))
+                    _verification(facts, s, args.restore_dir))
         )  # fmt: skip
     lost = _versions_from_json(args.survival.read_text(encoding="utf-8")) if args.survival.exists() else []
     attempts = _attempts(args.attack)
@@ -226,7 +241,8 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--get")
     s.add_argument("pairs", nargs="*")
     s = sub.add_parser("report")
-    for name in ("--policy", "--facts", "--attack", "--survival", "--restore-dir", "--out-dir"):
+    s.add_argument("--facts", type=Path, nargs="+", required=True, help="merged in order (one file per writer)")
+    for name in ("--policy", "--attack", "--survival", "--restore-dir", "--out-dir"):
         s.add_argument(name, type=Path, required=True)
     s = sub.add_parser("gate")
     s.add_argument("--results", type=Path, required=True)

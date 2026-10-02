@@ -3,12 +3,13 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime, timedelta
 
-from drkit.attack import Attempt
+from drkit.attack import Attempt, attack, survival
 from drkit.gate import failures
 from drkit.measure import Outcome, Verification, measure
 from drkit.models import System
 from drkit.offsite import Version
 from drkit.report import render_html, render_markdown, results_json
+from tests.unit.fakes import FakeOffsite
 
 T0 = datetime(2026, 10, 2, 12, 0, tzinfo=UTC)
 APPT = System("appointments", "mssql", "appointments", 15, 30)
@@ -62,3 +63,25 @@ def test_short_rto_is_shown_in_seconds_too():
     fast = [measure(APPT, 60, T0, T0, T0 + timedelta(seconds=2.1), verified(10))]
     md = render_markdown(fast, [], [], BACKUPS, META)
     assert "0.0 min (2.1 s)" in md
+
+
+class _WeakLock(FakeOffsite):
+    """A store whose lock lets the retention be shortened (e.g. a bypass permission): nothing is lost yet."""
+
+    def shorten_retention(self, key: str, version_id: str, until: datetime) -> None:
+        for obj in self.objects.get(key, []):
+            if obj.version_id == version_id:
+                obj.retain_until = until
+
+
+def test_accepted_retention_shortening_fails_the_gate():
+    store = _WeakLock(clock=lambda: T0)
+    store.put("mssql/full/f.bak", b"FULL", T0 + timedelta(days=1))
+    before = store.versions("")
+    attempts = attack(store, T0)
+    lost = survival(before, store.versions(""))
+    assert lost == []  # every version still exists one minute before it becomes deletable
+    msgs = failures(json.loads(results_json(outcomes(), attempts, lost, BACKUPS, META)))
+    assert any("shorten-retention" in m and "accepted" in m for m in msgs)
+    md = render_markdown(outcomes(), attempts, lost, BACKUPS, META)
+    assert "not destructive unless listed as lost" not in md

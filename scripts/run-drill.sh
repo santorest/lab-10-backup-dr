@@ -44,7 +44,7 @@ bash scripts/restore-mssql.sh & mssql_pid=$!
 bash scripts/restore-pg.sh & pg_pid=$!
 wait "$mssql_pid" || status=2
 wait "$pg_pid" || status=2
-drkit report --policy "$POLICY" --facts "$FACTS" --attack out/drill/attack.json --survival out/drill/survival.json \
+drkit report --policy "$POLICY" --facts "$FACTS" out/drill/appointments.facts.json out/drill/billing.facts.json --attack out/drill/attack.json --survival out/drill/survival.json \
   --restore-dir out/restore --out-dir out
 cp out/backup-local/README-RANSOM.txt out/drill/ 2>/dev/null || true
 drkit gate --results out/results.json || status=$?

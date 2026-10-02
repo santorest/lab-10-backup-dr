@@ -85,7 +85,9 @@ kept in the on-call tool, not in this document.
    PostgreSQL replays every WAL segment it can fetch and then promotes itself (`SELECT pg_is_in_recovery()` returns
    `f`).
 3. Verify: `pg_amcheck --install-missing -d billing` must be clean; `lab/pg/verify.sql` returns the newest row's
-   time, the row count and the first/last sequence numbers.
+   time, the row count and the first/last sequence numbers. Recovery stops at the first segment it cannot fetch and
+   promotes anyway, so also check how far it got: `SELECT pg_walfile_name(pg_last_wal_replay_lsn())` must name the
+   last segment that was fetched (`drkit report` fails the restore otherwise).
 4. Record `recovered_at`.
 
 ## 6. Measuring the result
