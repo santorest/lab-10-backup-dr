@@ -9,7 +9,7 @@ schedule:
 retention:
   local_days: 14
   offsite_days: 14
-  offsite_lock_mode: COMPLIANCE   # COMPLIANCE: nobody can delete or shorten a locked version; none: no Object Lock
+  offsite_lock_mode: none         # COMPLIANCE: nobody can delete or shorten a locked version; none: no Object Lock
 drill:
   time_scale: 60            # policy seconds per real second: one policy minute takes one real second
   duration_minutes: 400     # the attack happens at policy minute 400
