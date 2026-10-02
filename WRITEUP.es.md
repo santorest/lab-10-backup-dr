@@ -112,8 +112,8 @@ De la [ejecución 37044822230](https://github.com/santorest/lab-10-backup-dr/act
 | `billing` (PostgreSQL) | ≤ 5 min | **2,5 min** (2,5 s reales) | ≤ 60 min | **39,7 s** | `pg_amcheck` limpio, 387 filas contiguas |
 
 - **Copias enviadas antes de T0**: `appointments` 1 completa (528 KiB), 1 diferencial (196 KiB), 26 copias de log
-  (828 KiB); `billing` 1 copia base (4,2 MiB) y 389 segmentos de WAL (8,9 MiB comprimidos). Cadenas de restauración
-  usadas: completa + diferencial + las 3 copias de log posteriores; base + 387 segmentos de WAL contiguos.
+  (828 KiB); `billing` 1 copia base (4,2 MiB) y 389 archivos de WAL (388 segmentos más una etiqueta de copia, 8,9 MiB comprimidos). Cadenas de restauración
+  usadas: completa + diferencial + las 3 copias de log posteriores; base + 386 segmentos de WAL contiguos (más el archivo de etiqueta de la copia).
 - **El ataque**: con la clave de copias robada, el ransomware hizo 3.184 intentos sobre las 796 versiones de objetos
   originales. Los 796 intentos de acortar la retención y los 796 borrados de versión fueron rechazados
   (`InvalidRequest: Object is WORM protected and cannot be overwritten`); las 796 sobrescrituras y los 796 borrados

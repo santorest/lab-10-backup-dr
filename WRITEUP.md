@@ -105,8 +105,8 @@ From [run 37044822230](https://github.com/santorest/lab-10-backup-dr/actions/run
 | `billing` (PostgreSQL) | ≤ 5 min | **2.5 min** (2.5 s real) | ≤ 60 min | **39.7 s** | `pg_amcheck` clean, 387 rows contiguous |
 
 - **Backups shipped before T0**: `appointments` 1 full (528 KiB), 1 differential (196 KiB), 26 log backups
-  (828 KiB); `billing` 1 base backup (4.2 MiB) and 389 WAL segments (8.9 MiB compressed). Restore chains used:
-  full + differential + the 3 log backups after it; base + 387 contiguous WAL segments.
+  (828 KiB); `billing` 1 base backup (4.2 MiB) and 389 WAL files (388 segments plus a backup label, 8.9 MiB compressed). Restore chains used:
+  full + differential + the 3 log backups after it; base + 386 contiguous WAL segments (plus the backup label file).
 - **The attack**: with the stolen backup key the ransomware made 3,184 attempts on the 796 original object versions.
   All 796 retention shortenings and all 796 version deletes were refused
   (`InvalidRequest: Object is WORM protected and cannot be overwritten`); the 796 overwrites and 796 plain deletes
