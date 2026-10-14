@@ -1,0 +1,77 @@
+{
+  "baseRefName": "main",
+  "body": "Demo PR, not to be merged. Sets `offsite_lock_mode: none`: the bucket is created without Object Lock and backups are shipped without retention. Expected: with the stolen backup key the ransomware deletes the off-site backups, nothing can be restored, and the `drill` job fails; the ruleset blocks the merge. `unit` is expected to fail too (`test_repository_policy_loads` pins COMPLIANCE).\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+  "closedAt": "2026-10-02T18:30:47Z",
+  "commits": [
+    {
+      "authoredDate": "2026-10-02T18:03:25Z",
+      "authors": [
+        {
+          "email": "37381624+santorest@users.noreply.github.com",
+          "id": "MDQ6VXNlcjM3MzgxNjI0",
+          "login": "santorest",
+          "name": "Santiago Restrepo Sánchez"
+        },
+        {
+          "email": "noreply@anthropic.com",
+          "id": "MDQ6VXNlcjgxODQ3",
+          "login": "claude",
+          "name": "Claude Opus 5.5"
+        }
+      ],
+      "committedDate": "2026-10-02T18:03:25Z",
+      "messageBody": "…troys the backups, the drill fails)\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "messageHeadline": "demo: off-site bucket without Object Lock (expected: the attacker des…",
+      "oid": "95955b617799ff63a64fa29cc80ba4174eb3bfac"
+    }
+  ],
+  "createdAt": "2026-10-02T18:12:36Z",
+  "headRefName": "demo/no-object-lock",
+  "mergedAt": null,
+  "number": 1,
+  "state": "CLOSED",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-02T18:13:05Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37045894458/job/110967112668",
+      "name": "lint",
+      "startedAt": "2026-10-02T18:12:45Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-02T18:13:00Z",
+      "conclusion": "FAILURE",
+      "detailsUrl": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37045894458/job/110967112957",
+      "name": "unit",
+      "startedAt": "2026-10-02T18:12:44Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-02T18:20:26Z",
+      "conclusion": "FAILURE",
+      "detailsUrl": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37045894458/job/110967112914",
+      "name": "drill",
+      "startedAt": "2026-10-02T18:12:44Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-02T18:12:52Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37045894458/job/110967113000",
+      "name": "secrets",
+      "startedAt": "2026-10-02T18:12:44Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    }
+  ],
+  "title": "Demo: off-site bucket without Object Lock (must be blocked)",
+  "url": "https://github.com/santorest/lab-10-backup-dr/pull/1"
+}

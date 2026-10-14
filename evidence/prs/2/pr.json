@@ -1,0 +1,77 @@
+{
+  "baseRefName": "main",
+  "body": "Demo PR, not to be merged. SQL Server log backups every 60 policy minutes instead of 15. Expected: the last log backup before the attack (policy minute 400) is at minute 360, so the achieved RPO is about 40 minutes against a 15-minute target and the `drill` gate fails; `unit` fails too (`test_repository_policy_loads`, `test_repository_timeline`); the ruleset blocks the merge.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+  "closedAt": "2026-10-02T18:30:51Z",
+  "commits": [
+    {
+      "authoredDate": "2026-10-02T18:03:26Z",
+      "authors": [
+        {
+          "email": "37381624+santorest@users.noreply.github.com",
+          "id": "MDQ6VXNlcjM3MzgxNjI0",
+          "login": "santorest",
+          "name": "Santiago Restrepo Sánchez"
+        },
+        {
+          "email": "noreply@anthropic.com",
+          "id": "MDQ6VXNlcjgxODQ3",
+          "login": "claude",
+          "name": "Claude Opus 5.5"
+        }
+      ],
+      "committedDate": "2026-10-02T18:03:26Z",
+      "messageBody": "… 15-minute target)\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "messageHeadline": "demo: log backups every 60 minutes (expected: achieved RPO misses the…",
+      "oid": "fac15bb9743f08fc2991918851783e77c7ddef1c"
+    }
+  ],
+  "createdAt": "2026-10-02T18:21:16Z",
+  "headRefName": "demo/hourly-log-backups",
+  "mergedAt": null,
+  "number": 2,
+  "state": "CLOSED",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-02T18:21:45Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37046864181/job/110970340657",
+      "name": "lint",
+      "startedAt": "2026-10-02T18:21:25Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-02T18:21:41Z",
+      "conclusion": "FAILURE",
+      "detailsUrl": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37046864181/job/110970340872",
+      "name": "unit",
+      "startedAt": "2026-10-02T18:21:24Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-02T18:29:53Z",
+      "conclusion": "FAILURE",
+      "detailsUrl": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37046864181/job/110970341024",
+      "name": "drill",
+      "startedAt": "2026-10-02T18:21:24Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-02T18:21:30Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37046864181/job/110970340908",
+      "name": "secrets",
+      "startedAt": "2026-10-02T18:21:24Z",
+      "status": "COMPLETED",
+      "workflowName": "ci"
+    }
+  ],
+  "title": "Demo: log backups every 60 minutes (must be blocked)",
+  "url": "https://github.com/santorest/lab-10-backup-dr/pull/2"
+}

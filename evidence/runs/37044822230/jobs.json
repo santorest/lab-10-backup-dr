@@ -1,0 +1,404 @@
+{
+  "jobs": [
+    {
+      "id": 110963530524,
+      "run_id": 37044822230,
+      "workflow_name": "ci",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/santorest/lab-10-backup-dr/actions/runs/37044822230",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU5Ldh88AAAAZ1fEbHA",
+      "head_sha": "1c43257c3799c842ea0b88cd0aad96e63bd53daa",
+      "url": "https://api.github.com/repos/santorest/lab-10-backup-dr/actions/jobs/110963530524",
+      "html_url": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37044822230/job/110963530524",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-02T18:03:02Z",
+      "started_at": "2026-10-02T18:03:05Z",
+      "completed_at": "2026-10-02T18:03:20Z",
+      "name": "unit",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-02T18:03:06Z",
+          "completed_at": "2026-10-02T18:03:06Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-02T18:03:06Z",
+          "completed_at": "2026-10-02T18:03:07Z"
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-02T18:03:07Z",
+          "completed_at": "2026-10-02T18:03:07Z"
+        },
+        {
+          "name": "Run pip install -r requirements-dev.txt && pip install --no-deps -e .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-02T18:03:07Z",
+          "completed_at": "2026-10-02T18:03:17Z"
+        },
+        {
+          "name": "Run pytest --cov=drkit --cov-report=term-missing --cov-fail-under=90",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-02T18:03:17Z",
+          "completed_at": "2026-10-02T18:03:19Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-02T18:03:19Z",
+          "completed_at": "2026-10-02T18:03:19Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-02T18:03:19Z",
+          "completed_at": "2026-10-02T18:03:19Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-02T18:03:19Z",
+          "completed_at": "2026-10-02T18:03:19Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-10-backup-dr/check-runs/110963530524",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000951,
+      "runner_name": "GitHub Actions 1000000951",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 110963530853,
+      "run_id": 37044822230,
+      "workflow_name": "ci",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/santorest/lab-10-backup-dr/actions/runs/37044822230",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU5Ldh88AAAAZ1fEcZQ",
+      "head_sha": "1c43257c3799c842ea0b88cd0aad96e63bd53daa",
+      "url": "https://api.github.com/repos/santorest/lab-10-backup-dr/actions/jobs/110963530853",
+      "html_url": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37044822230/job/110963530853",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-02T18:03:02Z",
+      "started_at": "2026-10-02T18:03:05Z",
+      "completed_at": "2026-10-02T18:03:09Z",
+      "name": "secrets",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-02T18:03:05Z",
+          "completed_at": "2026-10-02T18:03:06Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-02T18:03:06Z",
+          "completed_at": "2026-10-02T18:03:07Z"
+        },
+        {
+          "name": "gitleaks (full history, pinned by digest)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-02T18:03:07Z",
+          "completed_at": "2026-10-02T18:03:08Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-02T18:03:08Z",
+          "completed_at": "2026-10-02T18:03:08Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-02T18:03:08Z",
+          "completed_at": "2026-10-02T18:03:08Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-10-backup-dr/check-runs/110963530853",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000952,
+      "runner_name": "GitHub Actions 1000000952",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 110963530899,
+      "run_id": 37044822230,
+      "workflow_name": "ci",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/santorest/lab-10-backup-dr/actions/runs/37044822230",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU5Ldh88AAAAZ1fEckw",
+      "head_sha": "1c43257c3799c842ea0b88cd0aad96e63bd53daa",
+      "url": "https://api.github.com/repos/santorest/lab-10-backup-dr/actions/jobs/110963530899",
+      "html_url": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37044822230/job/110963530899",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-02T18:03:02Z",
+      "started_at": "2026-10-02T18:03:05Z",
+      "completed_at": "2026-10-02T18:11:30Z",
+      "name": "drill",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-02T18:03:06Z",
+          "completed_at": "2026-10-02T18:03:07Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-02T18:03:07Z",
+          "completed_at": "2026-10-02T18:03:08Z"
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-02T18:03:08Z",
+          "completed_at": "2026-10-02T18:03:08Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt && pip install --no-deps -e .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-02T18:03:08Z",
+          "completed_at": "2026-10-02T18:03:14Z"
+        },
+        {
+          "name": "Secrets for this run",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-02T18:03:14Z",
+          "completed_at": "2026-10-02T18:03:14Z"
+        },
+        {
+          "name": "Backups, ransomware, restore, measure, gate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-02T18:03:14Z",
+          "completed_at": "2026-10-02T18:11:26Z"
+        },
+        {
+          "name": "Summary",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-02T18:11:26Z",
+          "completed_at": "2026-10-02T18:11:26Z"
+        },
+        {
+          "name": "Logs on failure",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-02T18:11:26Z",
+          "completed_at": "2026-10-02T18:11:26Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-02T18:11:26Z",
+          "completed_at": "2026-10-02T18:11:27Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-02T18:11:27Z",
+          "completed_at": "2026-10-02T18:11:27Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-02T18:11:27Z",
+          "completed_at": "2026-10-02T18:11:28Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-02T18:11:28Z",
+          "completed_at": "2026-10-02T18:11:28Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-10-backup-dr/check-runs/110963530899",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000953,
+      "runner_name": "GitHub Actions 1000000953",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 110963530982,
+      "run_id": 37044822230,
+      "workflow_name": "ci",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/santorest/lab-10-backup-dr/actions/runs/37044822230",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOU5Ldh88AAAAZ1fEc5g",
+      "head_sha": "1c43257c3799c842ea0b88cd0aad96e63bd53daa",
+      "url": "https://api.github.com/repos/santorest/lab-10-backup-dr/actions/jobs/110963530982",
+      "html_url": "https://github.com/santorest/lab-10-backup-dr/actions/runs/37044822230/job/110963530982",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-02T18:03:02Z",
+      "started_at": "2026-10-02T18:03:05Z",
+      "completed_at": "2026-10-02T18:03:23Z",
+      "name": "lint",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-02T18:03:06Z",
+          "completed_at": "2026-10-02T18:03:06Z"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-02T18:03:06Z",
+          "completed_at": "2026-10-02T18:03:07Z"
+        },
+        {
+          "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-02T18:03:07Z",
+          "completed_at": "2026-10-02T18:03:07Z"
+        },
+        {
+          "name": "Run pip install -r requirements-dev.txt && pip install --no-deps -e .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-02T18:03:07Z",
+          "completed_at": "2026-10-02T18:03:17Z"
+        },
+        {
+          "name": "Run ruff check .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-02T18:03:17Z",
+          "completed_at": "2026-10-02T18:03:17Z"
+        },
+        {
+          "name": "Run ruff format --check .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-02T18:03:17Z",
+          "completed_at": "2026-10-02T18:03:17Z"
+        },
+        {
+          "name": "Run mypy",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-02T18:03:17Z",
+          "completed_at": "2026-10-02T18:03:20Z"
+        },
+        {
+          "name": "Run shellcheck -x scripts/*.sh lab/pg/archive-wal.sh",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-02T18:03:20Z",
+          "completed_at": "2026-10-02T18:03:21Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-02T18:03:21Z",
+          "completed_at": "2026-10-02T18:03:21Z"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-02T18:03:21Z",
+          "completed_at": "2026-10-02T18:03:21Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-02T18:03:21Z",
+          "completed_at": "2026-10-02T18:03:21Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/santorest/lab-10-backup-dr/check-runs/110963530982",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000000954,
+      "runner_name": "GitHub Actions 1000000954",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
