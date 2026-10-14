@@ -8,7 +8,6 @@ date: "2026-10-02"
 time_to_reproduce: "About 10 minutes: one CI run (fork, enable Actions, run CI); the drill job takes 8–9 minutes"
 skills: [SQL Server, PostgreSQL, MinIO, S3 Object Lock, Python, boto3, Docker, GitHub Actions]
 frameworks: [CIS Controls v8 (11.1, 11.2, 11.3, 11.4, 11.5, 17.4), MITRE ATT&CK (T1486, T1490, T1485)]
-repo: "https://github.com/santorest/lab-10-backup-dr"
 bundle: "Published on the portfolio site with its SHA-256 checksum"
 ---
 
@@ -94,11 +93,11 @@ request and all four jobs.
 
 ## 7. Results
 
-From [run 37044822230](https://github.com/santorest/lab-10-backup-dr/actions/runs/37044822230) on `main`
+From run 37044822230 (2026-10-02, archived in `evidence/runs/37044822230/`) on `main`
 (2026-10-02, final code); `docs/example-report.html` is its report. The first green run,
-[37043674073](https://github.com/santorest/lab-10-backup-dr/actions/runs/37043674073), gave the same outcome
+37043674073 (2026-10-02, archived in `evidence/runs/37043674073/`), gave the same outcome
 (appointments RPO 11.1 min, RTO 2.1 s; billing RPO 1.8 min, RTO 59.7 s; 0 versions lost). After the final-review
-fixes, [run 37049627002](https://github.com/santorest/lab-10-backup-dr/actions/runs/37049627002) passed the new
+fixes, run 37049627002 (2026-10-02, archived in `evidence/runs/37049627002/`) passed the new
 checks — no destructive request accepted, PostgreSQL replay reached the last fetched WAL segment — with the same
 picture (appointments RPO 11.0 min, RTO 2.5 s; billing RPO 2.4 min, RTO 39.8 s; 0 versions lost).
 
@@ -128,8 +127,8 @@ picture (appointments RPO 11.0 min, RTO 2.5 s; billing RPO 2.4 min, RTO 39.8 s; 
 
 | PR | Change | What happened |
 |---|---|---|
-| [#1](https://github.com/santorest/lab-10-backup-dr/pull/1) | off-site bucket without Object Lock | the stolen key deleted all 799 original versions; no manifest survived, so neither database could be restored; the gate failed (`drill`), and `unit` failed on the tests that pin the compliance lock |
-| [#2](https://github.com/santorest/lab-10-backup-dr/pull/2) | SQL Server log backups every 60 minutes instead of 15 | 6 log backups instead of 26, the last one 40 policy minutes before the attack; both restores were verified and nothing was lost off-site, but the achieved RPO was **41.3 min** against 15 and the gate failed (`drill`); `unit` failed on the tests that pin the repository policy and timeline |
+| #1 (archived in `evidence/prs/1/`) | off-site bucket without Object Lock | the stolen key deleted all 799 original versions; no manifest survived, so neither database could be restored; the gate failed (`drill`), and `unit` failed on the tests that pin the compliance lock |
+| #2 (archived in `evidence/prs/2/`) | SQL Server log backups every 60 minutes instead of 15 | 6 log backups instead of 26, the last one 40 policy minutes before the attack; both restores were verified and nothing was lost off-site, but the achieved RPO was **41.3 min** against 15 and the gate failed (`drill`); `unit` failed on the tests that pin the repository policy and timeline |
 
 ## 8. Lessons
 

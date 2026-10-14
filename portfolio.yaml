@@ -1,7 +1,6 @@
 # Metadata used by the portfolio site's `import_lab` command (site repo). Not needed to run the lab.
 slug: backup-dr
 category: database-security
-repo_url: https://github.com/santorest/lab-10-backup-dr
 status: complete             # design | in_progress | complete — owner confirmed 2026-10-02 after the final review fix pass (PR #4)
 difficulty: intermediate     # beginner | intermediate | advanced
 featured: true

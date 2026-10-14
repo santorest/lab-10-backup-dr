@@ -8,7 +8,6 @@ date: "2026-10-02"
 time_to_reproduce: "Unos 10 minutos: una ejecución de CI (fork, activar Actions, ejecutar CI); el job del simulacro tarda 8–9 minutos"
 skills: [SQL Server, PostgreSQL, MinIO, S3 Object Lock, Python, boto3, Docker, GitHub Actions]
 frameworks: [CIS Controls v8 (11.1, 11.2, 11.3, 11.4, 11.5, 17.4), MITRE ATT&CK (T1486, T1490, T1485)]
-repo: "https://github.com/santorest/lab-10-backup-dr"
 bundle: "Publicado en el sitio del portafolio con su checksum SHA-256"
 ---
 
@@ -101,11 +100,11 @@ request y los cuatro jobs.
 
 ## 7. Resultados
 
-De la [ejecución 37044822230](https://github.com/santorest/lab-10-backup-dr/actions/runs/37044822230) en `main`
+De la ejecución 37044822230 (2026-10-02, archivada en `evidence/runs/37044822230/`) en `main`
 (2026-10-02, código final); `docs/example-report.html` es su reporte. La primera ejecución en verde,
-[37043674073](https://github.com/santorest/lab-10-backup-dr/actions/runs/37043674073), dio el mismo resultado
+37043674073 (2026-10-02, archivada en `evidence/runs/37043674073/`), dio el mismo resultado
 (appointments RPO 11,1 min, RTO 2,1 s; billing RPO 1,8 min, RTO 59,7 s; 0 versiones perdidas). Tras las
-correcciones de la revisión final, la [ejecución 37049627002](https://github.com/santorest/lab-10-backup-dr/actions/runs/37049627002)
+correcciones de la revisión final, la ejecución 37049627002 (2026-10-02, archivada en `evidence/runs/37049627002/`)
 pasó las nuevas comprobaciones — ninguna petición destructiva aceptada, la reproducción de PostgreSQL llegó al último
 segmento de WAL obtenido — con el mismo panorama (appointments RPO 11,0 min, RTO 2,5 s; billing RPO 2,4 min,
 RTO 39,8 s; 0 versiones perdidas).
@@ -138,8 +137,8 @@ RTO 39,8 s; 0 versiones perdidas).
 
 | PR | Cambio | Qué pasó |
 |---|---|---|
-| [#1](https://github.com/santorest/lab-10-backup-dr/pull/1) | bucket externo sin Object Lock | la clave robada borró las 799 versiones originales; no sobrevivió ningún manifiesto, así que ninguna base se pudo restaurar; la compuerta falló (`drill`), y `unit` falló en las pruebas que fijan el bloqueo en modo compliance |
-| [#2](https://github.com/santorest/lab-10-backup-dr/pull/2) | copias de log de SQL Server cada 60 minutos en lugar de 15 | 6 copias de log en lugar de 26, la última 40 minutos de política antes del ataque; ambas restauraciones se verificaron y no se perdió nada en el nivel externo, pero el RPO logrado fue **41,3 min** frente a 15 y la compuerta falló (`drill`); `unit` falló en las pruebas que fijan la política y el calendario del repositorio |
+| #1 (archivado en `evidence/prs/1/`) | bucket externo sin Object Lock | la clave robada borró las 799 versiones originales; no sobrevivió ningún manifiesto, así que ninguna base se pudo restaurar; la compuerta falló (`drill`), y `unit` falló en las pruebas que fijan el bloqueo en modo compliance |
+| #2 (archivado en `evidence/prs/2/`) | copias de log de SQL Server cada 60 minutos en lugar de 15 | 6 copias de log en lugar de 26, la última 40 minutos de política antes del ataque; ambas restauraciones se verificaron y no se perdió nada en el nivel externo, pero el RPO logrado fue **41,3 min** frente a 15 y la compuerta falló (`drill`); `unit` falló en las pruebas que fijan la política y el calendario del repositorio |
 
 ## 8. Lecciones
 
